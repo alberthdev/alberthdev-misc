@@ -14,14 +14,15 @@ the package to install. The script provided here automates the process.
  
 ## How to Use
  * Download the script:
-   [convert_hexchat_stretch_to_jessie.sh](convert_hexchat_stretch_to_jessie.sh)
+   [convert_hexchat_stretch_to_jessie.sh][script]
+   (You will need to click the "Raw" button to actually download it!)
    
  * Download hexchat from here:
      https://packages.debian.org/stretch/hexchat
     
- * Change OLD_PKG and NEW_PKG to match the Debian package file name
+ * Change `OLD_PKG` and `NEW_PKG` to match the Debian package file name
    from the packages site. I recommend that NEW_PKG be slightly
-   different, e.g. old_first_part_JESSIE.deb.
+   different, e.g. `old_first_part_JESSIE.deb`.
    
  * Run the script. You should now have a modified package.
    
@@ -43,3 +44,5 @@ with jessie-compatible libproxy1 dependency.
 
 Once done, it simply re-builds the package from the extracted (and now
 modified) directory.
+
+[script]: convert_hexchat_stretch_to_jessie.sh
