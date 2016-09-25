@@ -28,7 +28,7 @@ These patches are available:
      from diffing the two source trees, the original and the fixed
      source. This is only here for reference - do NOT attempt to apply!
  * **Qt v5.7 Beta**:
-   * **`Qt57Dev-QtQuickControls-StaticQmlResourceFilesFix-AllPatchesBundled.patch** -
+   * **`Qt57Dev-QtQuickControls-StaticQmlResourceFilesFix-AllPatchesBundled.patch`** -
      this is the patch you should probably use. Contains all fixes
      needed for static compilation to work.
    * **`Qt57Dev-QtQuickControls-StaticQmlResourceFilesFix.patch`** -
@@ -38,8 +38,8 @@ These patches are available:
      original patch created from diffing the two source trees, the
      original and the fixed source. This is only here for reference -
      do NOT attempt to apply!
-   * **`Qt57Dev-StaticQmlResourceFilesFix.patch`** - this patch fixes
+   * **`Qt57Dev-StaticQmlResourceFilesFix.patch`** - this patch only fixes
      including QML files into a resource when building statically.
      See patch for more details.
-   * **`Qt57Dev-StaticQmlResourceUsageCPPFix.patch`** - this patch fixes
+   * **`Qt57Dev-StaticQmlResourceUsageCPPFix.patch`** - this patch only fixes
      using the resources when built statically. See patch for more details.
