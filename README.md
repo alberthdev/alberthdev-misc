@@ -6,7 +6,7 @@ dedicated repository, and are not small (or useless) enough for a Gist!
 The wiki includes some guides and gotchas that I've created or found
 over the years. They may have links to the code available here.
 
-### [Explore the Wiki](wiki/)
+### [➡ Explore the Wiki](wiki/)
 
 ## Subprojects:
 
