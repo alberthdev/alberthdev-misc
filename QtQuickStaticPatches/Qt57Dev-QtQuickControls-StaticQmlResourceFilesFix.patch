@@ -1,0 +1,113 @@
+diff -r -u "qtquickcontrols/src/controls/plugin.cpp.orig" "qtquickcontrols/src/controls/plugin.cpp"
+--- "qtquickcontrols/src/controls/plugin.cpp.orig"	2015-12-07 08:41:36.000000000 -0500
++++ "qtquickcontrols/src/controls/plugin.cpp"	2016-01-16 21:58:53.166262000 -0500
+@@ -68,11 +68,6 @@
+ #include <QtCore/qlocale.h>
+ #endif
+ 
+-static void initResources()
+-{
+-    Q_INIT_RESOURCE(controls);
+-}
+-
+ QT_BEGIN_NAMESPACE
+ 
+ static const struct {
+diff -r -u "qtquickcontrols/src/controls/plugin.h.orig" "qtquickcontrols/src/controls/plugin.h"
+--- "qtquickcontrols/src/controls/plugin.h.orig"	2015-12-07 08:41:36.000000000 -0500
++++ "qtquickcontrols/src/controls/plugin.h"	2016-01-16 21:58:57.123309100 -0500
+@@ -45,6 +45,13 @@
+ #include <QtCore/qtranslator.h>
+ #endif
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Controls);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ class QtQuickControlsPlugin: public QQmlExtensionPlugin
+@@ -52,6 +59,7 @@
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
++    QtQuickControlsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     void registerTypes(const char *uri);
+     void initializeEngine(QQmlEngine *engine, const char *uri);
+ private:
+diff -r -u "qtquickcontrols/src/dialogs/plugin.cpp.orig" "qtquickcontrols/src/dialogs/plugin.cpp"
+--- "qtquickcontrols/src/dialogs/plugin.cpp.orig"	2015-12-07 08:41:36.000000000 -0500
++++ "qtquickcontrols/src/dialogs/plugin.cpp"	2016-01-16 20:42:10.803275700 -0500
+@@ -61,7 +61,9 @@
+ 
+ static void initResources()
+ {
+-    Q_INIT_RESOURCE(dialogs);
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Dialogs);
++#endif
+ }
+ 
+ QT_BEGIN_NAMESPACE
+@@ -87,7 +89,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ 
+ public:
+-    QtQuick2DialogsPlugin() : QQmlExtensionPlugin(), m_useResources(true) { }
++    QtQuick2DialogsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent), m_useResources(true) { initResources(); }
+ 
+     virtual void initializeEngine(QQmlEngine *engine, const char * uri) {
+         qCDebug(lcRegistration) << uri << m_decorationComponentUrl;
+diff -r -u "qtquickcontrols/src/layouts/plugin.cpp.orig" "qtquickcontrols/src/layouts/plugin.cpp"
+--- "qtquickcontrols/src/layouts/plugin.cpp.orig"	2015-12-07 08:41:36.000000000 -0500
++++ "qtquickcontrols/src/layouts/plugin.cpp"	2016-01-16 23:29:22.680421200 -0500
+@@ -39,6 +39,13 @@
+ #include "qquicklinearlayout_p.h"
+ #include "qquickstacklayout_p.h"
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Layouts);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ //![class decl]
+@@ -47,6 +54,7 @@
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
++    QtQuickLayoutsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQuick.Layouts"));
+diff -r -u "qtquickcontrols/src/widgets/widgetsplugin.cpp.orig" "qtquickcontrols/src/widgets/widgetsplugin.cpp"
+--- "qtquickcontrols/src/widgets/widgetsplugin.cpp.orig"	2015-12-07 08:41:36.000000000 -0500
++++ "qtquickcontrols/src/widgets/widgetsplugin.cpp"	2016-01-16 20:30:11.147025700 -0500
+@@ -41,6 +41,13 @@
+ #include "qquickqcolordialog_p.h"
+ #include "qquickqfontdialog_p.h"
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Controls);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ /*!
+@@ -68,6 +75,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ 
+ public:
++    QtQuick2PrivateWidgetsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQuick.PrivateWidgets"));

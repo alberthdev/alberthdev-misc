@@ -1,0 +1,453 @@
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtbase/mkspecs/features/qml_module.prf" ".\\Qt56/qtbase/mkspecs/features/qml_module.prf"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtbase/mkspecs/features/qml_module.prf"	2016-03-03 12:35:22.000000000 -0500
++++ ".\\Qt56/qtbase/mkspecs/features/qml_module.prf"	2016-03-18 01:44:12.601609400 -0400
+@@ -13,7 +13,8 @@
+ 
+ isEmpty(TARGETPATH): error("Must set TARGETPATH (QML import name)")
+ 
+-fq_qml_files = $$_PRO_FILE_PWD_/qmldir
++qmldir_file = $$_PRO_FILE_PWD_/qmldir
++fq_qml_files = $$qmldir_file
+ 
+ for(qmlf, QML_FILES): fq_qml_files += $$absolute_path($$qmlf, $$_PRO_FILE_PWD_)
+ 
+@@ -25,6 +26,8 @@
+ else: \
+     instbase = $$[QT_INSTALL_QML]
+ 
++!qml1_target:static: CONFIG += builtin_resources
++
+ !force_independent:if(!debug_and_release|!build_all|CONFIG(release, debug|release)) {
+     # These bizarre rules copy the files to the qtbase build directory
+ 
+@@ -32,7 +35,8 @@
+         return($$relative_path($$1, $$_PRO_FILE_PWD_))
+     }
+ 
+-    qmlfiles2build.input = fq_qml_files
++    !builtin_resources: qmlfiles2build.input = fq_qml_files
++    else: qmlfiles2build.input = qmldir_file
+     qmlfiles2build.output = $$instbase/$$TARGETPATH/${QMAKE_FUNC_FILE_IN_qmlModStripSrcDir}
+     !contains(TEMPLATE, vc.*): qmlfiles2build.variable_out = PRE_TARGETDEPS
+     qmlfiles2build.commands = $$QMAKE_COPY ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+@@ -42,8 +46,18 @@
+     QMAKE_EXTRA_COMPILERS += qmlfiles2build
+ }
+ 
++builtin_resources {
++    URITARGET = $$replace(URI, "\\.", "_")
++    # Ensure the qml files are included in the resources
++    $${URITARGET}.files = $$fq_qml_files
++    # qt-project.org/imports is the path used for locating imports inside the resources
++    $${URITARGET}.prefix = /qt-project.org/imports/$$TARGETPATH
++    RESOURCES += $${URITARGET}
++}
++
+ # Install rules
+ qmldir.base = $$_PRO_FILE_PWD_
+-qmldir.files = $$fq_qml_files
++!builtin_resources: qmldir.files = $$fq_qml_files
++else: qmldir.files = $$qmldir_file
+ qmldir.path = $$instbase/$$TARGETPATH
+ INSTALLS += qmldir
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/folderlistmodel/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/folderlistmodel/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/folderlistmodel/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/folderlistmodel/plugin.cpp"	2016-03-18 01:44:12.664109400 -0400
+@@ -36,6 +36,13 @@
+ 
+ #include "qquickfolderlistmodel.h"
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_Qt_labs_folderlistmodel);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ //![class decl]
+@@ -45,6 +52,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
+ 
+ public:
++    QmlFolderListModelPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("Qt.labs.folderlistmodel"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/localstorage/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/localstorage/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/localstorage/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/localstorage/plugin.cpp"	2016-03-18 01:44:12.664109400 -0400
+@@ -54,6 +54,13 @@
+ #include <private/qv4scopedvalue_p.h>
+ #include <private/qv4objectiterator_p.h>
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_LocalStorage);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ #define V4THROW_SQL(error, desc) { \
+@@ -744,10 +751,10 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
+ 
+ public:
+-    QQmlLocalStoragePlugin()
++    QQmlLocalStoragePlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent)
+     {
++        initResources();
+     }
+-
+     void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == "QtQuick.LocalStorage");
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/models/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/models/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/models/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/models/plugin.cpp"	2016-03-18 01:44:12.679734400 -0400
+@@ -35,6 +35,13 @@
+ 
+ #include <private/qqmlmodelsmodule_p.h>
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQml_Models_2);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ /*!
+@@ -64,6 +71,7 @@
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
++    QtQmlModelsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQml.Models"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/particles/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/particles/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/particles/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/particles/plugin.cpp"	2016-03-18 01:44:12.710984400 -0400
+@@ -35,6 +35,13 @@
+ 
+ #include <private/qquickparticlesmodule_p.h>
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Particles_2);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ //![class decl]
+@@ -43,6 +50,7 @@
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
++    QtQuick2ParticlesPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQuick.Particles"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/qtquick2/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/qtquick2/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/qtquick2/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/qtquick2/plugin.cpp"	2016-03-18 01:44:12.710984400 -0400
+@@ -35,6 +35,13 @@
+ 
+ #include <private/qtquick2_p.h>
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_2);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ //![class decl]
+@@ -43,6 +50,7 @@
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
++    QtQuick2Plugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQuick"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/settings/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/settings/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/settings/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/settings/plugin.cpp"	2016-03-18 01:44:12.742234400 -0400
+@@ -36,6 +36,13 @@
+ 
+ #include "qqmlsettings_p.h"
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_Qt_labs_settings);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ class QmlSettingsPlugin : public QQmlExtensionPlugin
+@@ -44,6 +51,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
+ 
+ public:
++    QmlSettingsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QByteArray(uri) == QByteArray("Qt.labs.settings"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/statemachine/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/statemachine/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/statemachine/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/statemachine/plugin.cpp"	2016-03-18 01:44:12.757859400 -0400
+@@ -41,6 +41,13 @@
+ #include <QQmlExtensionPlugin>
+ #include <qqml.h>
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQml_StateMachine);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ class QtQmlStateMachinePlugin : public QQmlExtensionPlugin
+@@ -49,6 +56,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtQml.StateMachine/1.0")
+ 
+ public:
++    QtQmlStateMachinePlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     void registerTypes(const char *uri)
+     {
+         qmlRegisterType<State>(uri, 1, 0, "State");
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/testlib/main.cpp" ".\\Qt56/qtdeclarative/src/imports/testlib/main.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/testlib/main.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/testlib/main.cpp"	2016-03-18 01:44:12.789109400 -0400
+@@ -48,6 +48,13 @@
+ 
+ #include <QtDebug>
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtTest);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ class QuickTestUtil : public QObject
+@@ -137,6 +144,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
+ 
+ public:
++    QTestQmlModule(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtTest"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/window/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/window/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/window/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/window/plugin.cpp"	2016-03-18 01:44:12.789109400 -0400
+@@ -35,6 +35,13 @@
+ 
+ #include <private/qquickwindowmodule_p.h>
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Window_2);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ /*!
+@@ -53,13 +60,13 @@
+ */
+ 
+ 
+-
+ //![class decl]
+ class QtQuick2WindowPlugin : public QQmlExtensionPlugin
+ {
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
++    QtQuick2WindowPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQuick.Window"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/xmllistmodel/plugin.cpp" ".\\Qt56/qtdeclarative/src/imports/xmllistmodel/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/imports/xmllistmodel/plugin.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/imports/xmllistmodel/plugin.cpp"	2016-03-18 01:44:12.820359400 -0400
+@@ -36,6 +36,13 @@
+ 
+ #include "qqmlxmllistmodel_p.h"
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_XmlListModel);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ class QmlXmlListModelPlugin : public QQmlExtensionPlugin
+@@ -44,6 +51,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
+ 
+ public:
++    QmlXmlListModelPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQuick.XmlListModel"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/qml/doc/src/qmllanguageref/syntax/imports.qdoc" ".\\Qt56/qtdeclarative/src/qml/doc/src/qmllanguageref/syntax/imports.qdoc"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/qml/doc/src/qmllanguageref/syntax/imports.qdoc"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/qml/doc/src/qmllanguageref/syntax/imports.qdoc"	2016-03-18 01:44:12.851609400 -0400
+@@ -291,6 +291,7 @@
+ \li The directory of the current file
+ \li The location specified by QLibraryInfo::Qml2ImportsPath
+ \li Paths specified by the \c QML2_IMPORT_PATH environment variable
++\li The qrc:/qt-project.org/imports path inside the resources.
+ \endlist
+ 
+ Additional import paths can be added through QQmlEngine::addImportPath() or the
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/qml/qml/qqmlimport.cpp" ".\\Qt56/qtdeclarative/src/qml/qml/qqmlimport.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtdeclarative/src/qml/qml/qqmlimport.cpp"	2016-02-26 10:34:34.000000000 -0500
++++ ".\\Qt56/qtdeclarative/src/qml/qml/qqmlimport.cpp"	2016-03-18 01:44:12.882859400 -0400
+@@ -1562,8 +1562,8 @@
+ : engine(e)
+ {
+     filePluginPath << QLatin1String(".");
+-
+-    // Search order is applicationDirPath(), $QML2_IMPORT_PATH, QLibraryInfo::Qml2ImportsPath
++    addImportPath(QStringLiteral("qrc:/qt-project.org/imports"));
++    // Search order is applicationDirPath(), qrc:/qt-project.org/imports, $QML2_IMPORT_PATH, QLibraryInfo::Qml2ImportsPath
+ 
+     QString installImportsPath =  QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
+     addImportPath(installImportsPath);
+Only in .\Qt56/qtdeclarative/src/qml/qml: qqmlimport.cpp.orig
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/controls/plugin.cpp" ".\\Qt56/qtquickcontrols/src/controls/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/controls/plugin.cpp"	2016-02-25 08:02:42.000000000 -0500
++++ ".\\Qt56/qtquickcontrols/src/controls/plugin.cpp"	2016-03-18 01:44:12.945359400 -0400
+@@ -68,11 +68,6 @@
+ #include <QtCore/qlocale.h>
+ #endif
+ 
+-static void initResources()
+-{
+-    Q_INIT_RESOURCE(controls);
+-}
+-
+ QT_BEGIN_NAMESPACE
+ 
+ static const struct {
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/controls/plugin.h" ".\\Qt56/qtquickcontrols/src/controls/plugin.h"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/controls/plugin.h"	2016-02-25 08:02:42.000000000 -0500
++++ ".\\Qt56/qtquickcontrols/src/controls/plugin.h"	2016-03-18 01:44:12.960984400 -0400
+@@ -45,6 +45,13 @@
+ #include <QtCore/qtranslator.h>
+ #endif
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Controls);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ class QtQuickControlsPlugin: public QQmlExtensionPlugin
+@@ -52,6 +59,7 @@
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
++    QtQuickControlsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     void registerTypes(const char *uri);
+     void initializeEngine(QQmlEngine *engine, const char *uri);
+ private:
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/dialogs/plugin.cpp" ".\\Qt56/qtquickcontrols/src/dialogs/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/dialogs/plugin.cpp"	2016-02-25 08:02:42.000000000 -0500
++++ ".\\Qt56/qtquickcontrols/src/dialogs/plugin.cpp"	2016-03-18 01:44:12.960984400 -0400
+@@ -61,7 +61,9 @@
+ 
+ static void initResources()
+ {
+-    Q_INIT_RESOURCE(dialogs);
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Dialogs);
++#endif
+ }
+ 
+ QT_BEGIN_NAMESPACE
+@@ -87,7 +89,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ 
+ public:
+-    QtQuick2DialogsPlugin() : QQmlExtensionPlugin(), m_useResources(true) { }
++    QtQuick2DialogsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent), m_useResources(true) { initResources(); }
+ 
+     virtual void initializeEngine(QQmlEngine *engine, const char * uri) {
+         qCDebug(lcRegistration) << uri << m_decorationComponentUrl;
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/layouts/plugin.cpp" ".\\Qt56/qtquickcontrols/src/layouts/plugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/layouts/plugin.cpp"	2016-02-25 08:02:42.000000000 -0500
++++ ".\\Qt56/qtquickcontrols/src/layouts/plugin.cpp"	2016-03-18 01:44:12.976609400 -0400
+@@ -39,6 +39,13 @@
+ #include "qquicklinearlayout_p.h"
+ #include "qquickstacklayout_p.h"
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Layouts);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ //![class decl]
+@@ -47,6 +54,7 @@
+     Q_OBJECT
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ public:
++    QtQuickLayoutsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQuick.Layouts"));
+diff --ignore-all-space -r -u "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/widgets/widgetsplugin.cpp" ".\\Qt56/qtquickcontrols/src/widgets/widgetsplugin.cpp"
+--- "..\\Downloads\\qt-everywhere-opensource-src-5.6.0/qtquickcontrols/src/widgets/widgetsplugin.cpp"	2016-02-25 08:02:42.000000000 -0500
++++ ".\\Qt56/qtquickcontrols/src/widgets/widgetsplugin.cpp"	2016-03-18 01:44:13.007859400 -0400
+@@ -41,6 +41,13 @@
+ #include "qquickqcolordialog_p.h"
+ #include "qquickqfontdialog_p.h"
+ 
++static void initResources()
++{
++#ifdef QT_STATIC
++    Q_INIT_RESOURCE(qmake_QtQuick_Controls);
++#endif
++}
++
+ QT_BEGIN_NAMESPACE
+ 
+ /*!
+@@ -68,6 +75,7 @@
+     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+ 
+ public:
++    QtQuick2PrivateWidgetsPlugin(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+     virtual void registerTypes(const char *uri)
+     {
+         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtQuick.PrivateWidgets"));
