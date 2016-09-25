@@ -23,5 +23,11 @@ dedicated repository, and are not small (or useless) enough for a Gist!
    from [this issue](https://bugreports.qt.io/browse/QTBUG-35754),
    and modified to support various other modules as well.
 
+ * [Qt Build Scripts][p3] -
+   scripts to help with building Qt statically. See the
+   [wiki](wiki/Building-Qt-v5.6-Statically-on-Windows) for more
+   details.
+
 [p1]: HexChat_Debian_Stretch_To_Jessie_Package_Converter/
 [p2]: QtQuickStaticPatches/
+[p3]: QtBuildScripts/
