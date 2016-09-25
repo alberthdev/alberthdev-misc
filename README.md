@@ -19,8 +19,8 @@ dedicated repository, and are not small (or useless) enough for a Gist!
    bundling all three graphics DLLs to maximize compatability on
    all machines!
    
-   Currently, patches are provided for Qt v5.6 and v5.7. They are
-   from [this issue](https://bugreports.qt.io/browse/QTBUG-28357),
+   Currently, patches are provided for Qt v5.6 and v5.7 beta. They are
+   from [this issue](https://bugreports.qt.io/browse/QTBUG-35754),
    and modified to support various other modules as well.
 
 [p1]: HexChat_Debian_Stretch_To_Jessie_Package_Converter/
