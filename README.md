@@ -2,11 +2,11 @@
 Miscellaneous things I've created that are not big enough for a
 dedicated repository, and are not small (or useless) enough for a Gist!
 
-## [Wiki](wiki/)
+## [Wiki](../../wiki/)
 The wiki includes some guides and gotchas that I've created or found
 over the years. They may have links to the code available here.
 
-### [➡ Explore the Wiki](wiki/)
+### [➡ Explore the Wiki](../../wiki)
 
 ## Subprojects:
 
