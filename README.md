@@ -31,9 +31,9 @@ over the years. They may have links to the code available here.
 
  * [Qt Build Scripts][p3] -
    scripts to help with building Qt statically. See the
-   [wiki](wiki/Building-Qt-v5.6-Statically-on-Windows) for more
-   details.
+   [wiki][wiki] for more details.
 
 [p1]: HexChat_Debian_Stretch_To_Jessie_Package_Converter/
 [p2]: QtQuickStaticPatches/
 [p3]: QtBuildScripts/
+[wiki]: https://github.com/alberthdev/alberthdev-misc/wiki/Building-Qt-v5.6-Statically-on-Windows
