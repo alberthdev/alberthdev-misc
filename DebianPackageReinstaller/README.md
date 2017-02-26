@@ -33,12 +33,18 @@ version of Debian, as well as other Debian-based systems as well.
  * Download the script:
    [reinstall_debian.py][script]
    (You will need to click the "Raw" button to actually download it!)
-   
+
+ * Start your system in "recovery" (or "rescue") mode. This should be an
+   option when booting your system. If not, you should terminate as many
+   non-essential programs on your system as possible before starting the
+   reinstall. (Yes, this includes your desktop! You should be in the
+   raw console, e.g. CTRL-ALT-F1, for the duration of this reinstall.)
+
  * Fetch your package list and set your environment variable:
    
    `export PKGLIST=$(dpkg --get-selections | grep -v deinstall | cut -f1)`
    
- * Run the script:
+ * Run the script (as root):
    
    `python reinstall_debian.py`
    
@@ -47,6 +53,9 @@ version of Debian, as well as other Debian-based systems as well.
    `python3 reinstall_debian.py`
    
  * Wait. If there are any errors, make sure to correct them.
+ 
+ * Once you're done, reboot your system immediately. Hopefully your
+   system will be back to normal!
 
 ## Technical Details
 This script basically chunks out the package reinstallation, and
