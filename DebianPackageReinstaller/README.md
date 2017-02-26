@@ -8,6 +8,9 @@ This has been tested on Jessie. This script may work on newer/older
 version of Debian, as well as other Debian-based systems as well.
 (Ubuntu and Mint are included!)
 
+## Screenshots
+![Terminal Output for Script](https://cloud.githubusercontent.com/assets/1274384/23337875/1b3453c8-fbc9-11e6-8431-589c8cde16bf.png)
+
 ## Requirements
  * Debian (or Debian-based) system. (Ubuntu, Mint, and friends are
    included!)
