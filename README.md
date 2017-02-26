@@ -33,7 +33,12 @@ over the years. They may have links to the code available here.
    scripts to help with building Qt statically. See the
    [wiki][wiki] for more details.
 
+ * [Debian Package Reinstaller][p4] -
+   script to help with reinstalling all of the Debian packages on a
+   Debian or Debian-based system (including Ubuntu and Mint).
+
 [p1]: HexChat_Debian_Stretch_To_Jessie_Package_Converter/
 [p2]: QtQuickStaticPatches/
 [p3]: QtBuildScripts/
+[p4]: DebianPackageReinstaller/
 [wiki]: https://github.com/alberthdev/alberthdev-misc/wiki/Building-Qt-v5.6-Statically-on-Windows
