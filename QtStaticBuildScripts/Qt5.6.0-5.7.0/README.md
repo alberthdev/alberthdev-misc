@@ -1,6 +1,6 @@
-# Qt Quick Static Build Scripts + Patches for Qt v5.6 + v5.7
+# Qt Static Build Scripts + Patches for Qt v5.6 + v5.7
 
 ## Introduction
-These scripts help with the building of Qt statically.
+These scripts help with the building of Qt statically, including Qt Quick.
 See the [wiki](../../../wiki/Building-Qt-v5.6-5.7-Statically-on-Windows)
 for more details!

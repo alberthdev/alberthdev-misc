@@ -1,4 +1,4 @@
-# Qt Quick Static Build Scripts + Patches
+# Qt Static Build Scripts + Patches
 
 ## Introduction
 These scripts help with the building of Qt statically.
