@@ -43,4 +43,4 @@ over the years. They may have links to the code available here.
 [p2]: QtStaticBuildScripts/Qt5.6.0-5.7.0/QtQuickStaticPatches/
 [p3]: QtStaticBuildScripts/
 [p4]: DebianPackageReinstaller/
-[wiki]: https://github.com/alberthdev/alberthdev-misc/wiki/Building-Qt-v5.6-5.7-Statically-on-Windows
+[wiki]: https://github.com/alberthdev/alberthdev-misc/wiki/Building-Qt-Statically-on-Windows
